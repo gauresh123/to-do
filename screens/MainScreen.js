@@ -5,27 +5,30 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Filters from "../components/Filters";
 import { useDispatch, useSelector } from "react-redux";
-import { add, remove } from "../slices/todoSlice";
-import { Checkbox } from "react-native-paper";
+import { add, remove, update } from "../slices/todoSlice";
+import { ActivityIndicator, Checkbox } from "react-native-paper";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const { height } = Dimensions.get("screen");
 
 export default function MainScreen({ navigation }) {
-  const [data, setData] = useState([]);
-  //const data = useSelector((state) => state.todo.val);
+  //const [data, setData] = useState([]);
+  const data = useSelector((state) => state.todo.val);
 
   const dispatch = useDispatch();
   const [info, setInfo] = useState(data);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const fetchTodos = async () => {
     const res = await axios.get("https://jsonplaceholder.typicode.com/todos");
-    //dispatch(add(res.data));
-    setData(res.data);
+    dispatch(add(res.data));
+    // setData(res.data);
     setInfo(res.data);
   };
 
@@ -33,24 +36,37 @@ export default function MainScreen({ navigation }) {
     fetchTodos();
   }, []);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setInfo(data);
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (data) {
+      const newData = data?.filter(
+        (item) => !info?.some((existingItem) => existingItem?.id === item?.id)
+      );
+
+      if (newData.length > 0) {
+        setInfo((prevInfo) => [...prevInfo, ...newData]);
+      }
+    }
+  }, [data]);
 
   const handleCheck = (index) => {
     setInfo((prevInfo) => {
       const updatedInfo = prevInfo?.map((item, idx) =>
         idx === index ? { ...item, completed: !item?.completed } : item
       );
-      setData(updatedInfo);
+      //  setData(updatedInfo);
+      dispatch(update(updatedInfo));
       return updatedInfo;
     });
   };
 
-  const handleDelete = (id) => {
-    dispatch(remove(id));
+  const handleDelete = async (item) => {
+    try {
+      setLoadingDelete(true);
+      await dispatch(remove(item?.id));
+    } finally {
+      setLoadingDelete(false);
+      Alert.alert(`${item?.title} is deleted!`);
+    }
   };
   const renderTodo = useCallback(({ item, index }) => {
     return (
@@ -66,8 +82,18 @@ export default function MainScreen({ navigation }) {
             </Text>
           </View>
 
-          <TouchableOpacity onPress={() => handleDelete(item?.id)}>
-            <Text>Del</Text>
+          <TouchableOpacity onPress={() => handleDelete(item)}>
+            <Text>
+              {loadingDelete ? (
+                <ActivityIndicator color="red" size={10} />
+              ) : (
+                <AntDesign
+                  name="delete"
+                  size={(height * 2.5) / 100}
+                  color="red"
+                />
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -92,8 +118,19 @@ export default function MainScreen({ navigation }) {
           style={styles.floatButton}
           onPress={() => navigation.navigate("Add Todo")}
         >
-          <Text>+</Text>
+          <Text>
+            <AntDesign name="plus" size={24} color="white" />
+          </Text>
         </TouchableOpacity>
+        <View style={styles.totaltodo}>
+          <Text style={styles.totaltext}>Total: {info?.length}</Text>
+        </View>
+
+        <View style={[styles.totaltodo, { bottom: (height * 18) / 100 }]}>
+          <Text style={styles.totaltext}>
+            completed: {info?.filter((val) => val?.completed == true)?.length}
+          </Text>
+        </View>
       </View>
     </>
   );
@@ -110,6 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginLeft: 10,
     alignSelf: "center",
+    width: "72%",
   },
   item: {
     padding: 15,
@@ -125,12 +163,12 @@ const styles = StyleSheet.create({
   },
   floatButton: {
     position: "absolute",
-    bottom: 10,
+    bottom: (height * 2) / 100,
     right: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
     justifyContent: "center",
-    backgroundColor: "green",
+    backgroundColor: "#674fa3",
     borderRadius: 8,
   },
   textContainer: {
@@ -147,5 +185,20 @@ const styles = StyleSheet.create({
   completed: {
     textDecorationLine: "line-through",
     color: "gray",
+    width: "72%",
+  },
+  totaltodo: {
+    position: "absolute",
+    right: 10,
+    bottom: (height * 10) / 100,
+    justifyContent: "center",
+    backgroundColor: "#674fa3",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  totaltext: {
+    color: "white",
+    fontWeight: "500",
   },
 });

@@ -18,6 +18,10 @@ export default function AddTodoScreen({ navigation }) {
   };
 
   const handleAddTodo = async () => {
+    if (!title) {
+      Alert.alert("Please add title!");
+      return;
+    }
     try {
       dispatch(addSingleTodo(todo));
     } finally {
@@ -28,6 +32,9 @@ export default function AddTodoScreen({ navigation }) {
   console.log(title);
   return (
     <View style={styles.container}>
+      <View style={{ alignSelf: "flex-end" }}>
+        <Text>Add Your New To do</Text>
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}

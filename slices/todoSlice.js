@@ -19,9 +19,17 @@ export const todoSlice = createSlice({
     addSingleTodo: (state, action) => {
       state.val.unshift(action.payload);
     },
+    update: (state, action) => {
+      action.payload.forEach((newItem) => {
+        const index = state.val.findIndex((item) => item.id === newItem.id);
+        if (index !== -1) {
+          state.val[index] = { ...state.val[index], ...newItem };
+        }
+      });
+    },
   },
 });
 
-export const { add, remove, addSingleTodo } = todoSlice.actions;
+export const { add, remove, addSingleTodo, update } = todoSlice.actions;
 
 export default todoSlice.reducer;

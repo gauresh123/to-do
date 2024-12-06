@@ -8,8 +8,8 @@ import {
 import React from "react";
 import { useSelector } from "react-redux";
 
-export default function Filters({ setInfo, data }) {
-  //const data = useSelector((state) => state.todo.val);
+export default function Filters({ setInfo }) {
+  const data = useSelector((state) => state.todo.val);
 
   const handlePressed = (val) => {
     if (val == "All") {
