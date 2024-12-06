@@ -6,20 +6,23 @@ import {
   View,
 } from "react-native";
 import React from "react";
+import { useSelector } from "react-redux";
 
-export default function Filters({ data, setInfo }) {
+export default function Filters({ setInfo, data }) {
+  //const data = useSelector((state) => state.todo.val);
+
   const handlePressed = (val) => {
     if (val == "All") {
       setInfo(data);
       return;
     }
     if (val == "Active") {
-      let value = data.filter((ele) => ele.completed == false);
+      let value = data?.filter((ele) => ele?.completed == false);
       setInfo(value);
       return;
     }
     if (val == "Done") {
-      let value = data.filter((ele) => ele.completed == true);
+      let value = data?.filter((ele) => ele?.completed == true);
       setInfo(value);
       return;
     }
@@ -75,6 +78,6 @@ const styles = StyleSheet.create({
   },
 
   filtertext: {
-    fontWeight: "400",
+    fontWeight: "500",
   },
 });
