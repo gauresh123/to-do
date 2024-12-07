@@ -5,11 +5,15 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from "react-native-safe-area-context";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 export default function App() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <Route />
+      <Provider store={store}>
+        <Route />
+      </Provider>
     </SafeAreaProvider>
   );
 }
