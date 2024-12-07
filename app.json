@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "TODO",
-    "slug": "TODO",
+    "slug": "todo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,7 +27,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "30a7c70d-59cb-4f65-b2e6-4e8b35f17956"
+        "projectId": "34fef77e-36d9-435d-a450-b2c38b00f622"
       }
     }
   }

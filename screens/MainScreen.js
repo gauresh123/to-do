@@ -15,15 +15,11 @@ import Filters from "../components/Filters";
 import { useDispatch, useSelector } from "react-redux";
 import { add, remove, update } from "../slices/todoSlice";
 import TodoItem from "../components/TodoItem";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import IdModal from "../components/IdModal";
 import EditModal from "../components/EditModal";
-remove;
 const { height, width } = Dimensions.get("screen");
 
 export default function MainScreen({ navigation }) {
-  //const [data, setData] = useState([]);
-
   const data = useSelector((state) => state.todo.val);
   const [currentFilterVal, setCurrentFilterVal] = useState("All");
 
@@ -70,7 +66,7 @@ export default function MainScreen({ navigation }) {
       const updatedInfo = prevInfo?.map((item, idx) =>
         idx === index ? { ...item, completed: !item?.completed } : item
       );
-      //  setData(updatedInfo);
+
       dispatch(update(updatedInfo));
       return updatedInfo;
     });

@@ -7,8 +7,6 @@ import Checkbox from "expo-checkbox";
 
 const IdModal = ({ setInfo, open, closeModal }) => {
   const tods = useSelector((state) => state.todo.val);
-
-  const [isChecked, setIsChecked] = useState(false);
   const [filterVal, setFilterVal] = useState(null);
 
   const handleCheck = (value) => {
