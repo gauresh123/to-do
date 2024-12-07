@@ -6,31 +6,51 @@ import {
   Dimensions,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Filters from "../components/Filters";
 import { useDispatch, useSelector } from "react-redux";
-import { add, update } from "../slices/todoSlice";
+import { add, remove, update } from "../slices/todoSlice";
 import TodoItem from "../components/TodoItem";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import IdModal from "../components/IdModal";
-
+import EditModal from "../components/EditModal";
+remove;
 const { height } = Dimensions.get("screen");
 
 export default function MainScreen({ navigation }) {
   //const [data, setData] = useState([]);
+
   const data = useSelector((state) => state.todo.val);
+  const [currentFilterVal, setCurrentFilterVal] = useState("All");
 
   const dispatch = useDispatch();
   const [info, setInfo] = useState(data);
   const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editVal, setEditVal] = useState(null);
 
   const fetchTodos = async () => {
-    const res = await axios.get("https://jsonplaceholder.typicode.com/todos");
-    dispatch(add(res.data));
-    // setData(res.data);
-    // setInfo(res.data);
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+      const res = await axios.get(`https://jsonplaceholder.typicode.com/todos`);
+      if (res?.data?.length > 0) {
+        const uniqueData = res?.data?.filter(
+          (newItem) =>
+            !data.some((existingItem) => existingItem.id === newItem.id)
+        );
+
+        dispatch(add(uniqueData));
+      }
+    } catch (error) {
+      Alert.alert("Error fetching todo");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -39,14 +59,8 @@ export default function MainScreen({ navigation }) {
 
   useEffect(() => {
     if (data) {
-      // const newData = data?.filter(
-      //   (item) => !info?.some((existingItem) => existingItem?.id === item?.id)
-      // );
-
-      // if (newData.length > 0) {
-      //   setInfo((prevInfo) => [...prevInfo, ...newData]);
-      // }
       setInfo(data);
+      setCurrentFilterVal("All");
     }
   }, [data]);
 
@@ -62,11 +76,10 @@ export default function MainScreen({ navigation }) {
   };
 
   const handleDelete = (item) => {
-    console.log(item.id, "id");
     try {
-      setInfo((prev) => prev.filter((val) => val.id !== item.id));
+      dispatch(remove(item?.id));
     } finally {
-      Alert.alert(`${item?.title} is deleted!`);
+      Alert.alert(`${item.title} is deleted!`);
     }
   };
   const renderTodo = useCallback(({ item, index }) => {
@@ -77,54 +90,75 @@ export default function MainScreen({ navigation }) {
         index={index}
         handleDelete={(val) => handleDelete(val)}
         handleCheck={(val) => handleCheck(val)}
+        setEditVal={(val) => setEditVal(val)}
       />
     );
   }, []);
 
-  console.log(info.length);
-
   return (
     <>
-      <View style={[styles.container, { flex: info?.length > 10 ? 1 : null }]}>
-        <Filters
-          info={info}
-          data={data}
-          setInfo={(val) => setInfo(val)}
-          openModal={() => setOpenModal(true)}
+      {!isLoading ? (
+        <View style={[styles.container, { flex: info?.length > 5 ? 1 : null }]}>
+          <Filters
+            info={info}
+            data={data}
+            setInfo={(val) => setInfo(val)}
+            openModal={() => setOpenModal(true)}
+            currentFilterVal={currentFilterVal}
+            setCurrentFilterVal={(val) => setCurrentFilterVal(val)}
+          />
+          <FlatList
+            style={styles.list}
+            data={info}
+            keyboardShouldPersistTaps={"handled"}
+            renderItem={renderTodo}
+            keyExtractor={(item, index) => `${item?.id}-${index}`}
+          />
+          {info && (
+            <TouchableOpacity
+              style={styles.floatButton}
+              onPress={() => navigation.navigate("Add Todo")}
+            >
+              <Text>
+                <AntDesign name="plus" size={24} color="white" />
+              </Text>
+            </TouchableOpacity>
+          )}
+          {info && (
+            <View style={styles.totaltodo}>
+              <Text style={styles.totaltext}>Total: {info?.length}</Text>
+            </View>
+          )}
+          {info && (
+            <View style={[styles.totaltodo, { bottom: (height * 18) / 100 }]}>
+              <Text style={styles.totaltext}>
+                Completed:{" "}
+                {info?.filter((val) => val?.completed == true)?.length}
+              </Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        <ActivityIndicator
+          size={"large"}
+          color={"blue"}
+          style={styles.loader}
         />
-        <FlatList
-          style={styles.list}
-          data={info}
-          keyboardShouldPersistTaps={"handled"}
-          renderItem={renderTodo}
-          keyExtractor={(item, index) => `${item?.id}-${index}`}
-        />
-        {/* {data.length == 0 && <Text>No To Dos</Text>} */}
-        <TouchableOpacity
-          style={styles.floatButton}
-          onPress={() => navigation.navigate("Add Todo")}
-        >
-          <Text>
-            <AntDesign name="plus" size={24} color="white" />
-          </Text>
-        </TouchableOpacity>
-        {info && (
-          <View style={styles.totaltodo}>
-            <Text style={styles.totaltext}>Total: {info?.length}</Text>
-          </View>
-        )}
-        {info && (
-          <View style={[styles.totaltodo, { bottom: (height * 18) / 100 }]}>
-            <Text style={styles.totaltext}>
-              Completed: {info?.filter((val) => val?.completed == true)?.length}
-            </Text>
-          </View>
-        )}
-      </View>
+      )}
+
+      {/*modal for id filter*/}
       <IdModal
         open={openModal}
         setInfo={(val) => setInfo(val)}
         closeModal={() => setOpenModal(false)}
+      />
+      {/*modal for edit todo*/}
+      <EditModal
+        openModal={editVal && true}
+        closeMoadal={!editVal && false}
+        editVal={editVal}
+        setEditVal={(val) => setEditVal(val)}
+        setInfo={(val) => setInfo(val)}
       />
     </>
   );
@@ -193,5 +227,10 @@ const styles = StyleSheet.create({
   totaltext: {
     color: "white",
     fontWeight: "500",
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

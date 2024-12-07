@@ -8,9 +8,13 @@ import {
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-export default function Filters({ setInfo, openModal }) {
+export default function Filters({
+  setInfo,
+  openModal,
+  currentFilterVal,
+  setCurrentFilterVal,
+}) {
   const data = useSelector((state) => state.todo.val);
-  const [currentFilterVal, setCurrentFilterVal] = useState("");
 
   const handlePressed = (val) => {
     if (val == "All") {

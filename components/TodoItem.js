@@ -1,14 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { ActivityIndicator, Checkbox } from "react-native-paper";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Checkbox } from "react-native-paper";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function TodoItem({
   item,
   height,
-  index,
   handleCheck,
   handleDelete,
+  setEditVal,
+  index,
 }) {
+  const handleEdit = (item) => {
+    setEditVal(item);
+  };
   return (
     <View style={styles.item}>
       <View style={styles.textParentContainer}>
@@ -22,11 +33,27 @@ export default function TodoItem({
           </Text>
         </View>
 
-        <TouchableOpacity onPress={() => handleDelete(item)}>
-          <Text>
-            <AntDesign name="delete" size={(height * 2.5) / 100} color="red" />
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => handleDelete(item)}>
+            <Text>
+              <AntDesign
+                name="delete"
+                size={(height * 2.3) / 100}
+                color="red"
+              />
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => handleEdit(item)}>
+            <Text>
+              <Feather
+                name="edit-2"
+                size={(height * 2.3) / 100}
+                color="#674fa3"
+              />
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -37,7 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginLeft: 10,
     alignSelf: "center",
-    width: "72%",
+    width: "70%",
   },
   item: {
     padding: 15,
@@ -66,6 +93,11 @@ const styles = StyleSheet.create({
   completed: {
     textDecorationLine: "line-through",
     color: "gray",
-    width: "72%",
+    width: "70%",
+  },
+  iconContainer: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 5,
   },
 });

@@ -23,7 +23,7 @@ const IdModal = ({ setInfo, open, closeModal }) => {
     closeModal();
   };
   return (
-    <Modal visible={open} animationType="slide" transparent={true}>
+    <Modal visible={open} animationType="none" transparent={true}>
       <View style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.head}>Find by Id range</Text>
