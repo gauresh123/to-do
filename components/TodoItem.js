@@ -1,14 +1,4 @@
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-//import { Checkbox } from "react-native-paper";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Feather from "@expo/vector-icons/Feather";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Checkbox from "expo-checkbox";
 
 export default function TodoItem({
