@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Keyboard, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { Button, TextInput } from "react-native-paper";
 import axios from "axios";
@@ -24,6 +24,7 @@ export default function AddTodoScreen({ navigation }) {
     }
     try {
       dispatch(addSingleTodo(todo));
+      Keyboard.dismiss();
     } finally {
       navigation.navigate("Home");
     }
@@ -32,9 +33,7 @@ export default function AddTodoScreen({ navigation }) {
   console.log(title);
   return (
     <View style={styles.container}>
-      <View style={{ alignSelf: "flex-end" }}>
-        <Text>Add Your New To do</Text>
-      </View>
+      <View style={{ alignSelf: "flex-end" }}></View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
