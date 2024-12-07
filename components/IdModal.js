@@ -1,8 +1,9 @@
 import { Modal, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { data } from "../constants/range";
-import { Button, Checkbox } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
+import Checkbox from "expo-checkbox";
 
 const IdModal = ({ setInfo, open, closeModal }) => {
   const tods = useSelector((state) => state.todo.val);
@@ -32,8 +33,10 @@ const IdModal = ({ setInfo, open, closeModal }) => {
             return (
               <View style={styles.filterContainer} key={i}>
                 <Checkbox
-                  status={val?.id == filterVal?.id ? "checked" : "unchecked"}
-                  onPress={() => handleCheck(val)}
+                  value={val?.id == filterVal?.id ? true : false}
+                  onValueChange={() => handleCheck(val)}
+                  color={val?.id == filterVal?.id ? "#674fa3" : null}
+                  style={{ alignSelf: "center" }}
                 />
                 <Text style={styles.text}>{val?.title}</Text>
               </View>
@@ -65,7 +68,8 @@ const styles = StyleSheet.create({
   filterContainer: {
     display: "flex",
     flexDirection: "row",
-    gap: 3,
+    gap: 8,
+    margin: 5,
   },
   btn: {
     width: "100%",

@@ -1,13 +1,15 @@
 import {
   ActivityIndicator,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
+//import { Checkbox } from "react-native-paper";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import Checkbox from "expo-checkbox";
 
 export default function TodoItem({
   item,
@@ -16,6 +18,7 @@ export default function TodoItem({
   handleDelete,
   setEditVal,
   index,
+  width,
 }) {
   const handleEdit = (item) => {
     setEditVal(item);
@@ -25,8 +28,10 @@ export default function TodoItem({
       <View style={styles.textParentContainer}>
         <View style={styles.textContainer}>
           <Checkbox
-            status={item?.completed ? "checked" : "unchecked"}
-            onPress={() => handleCheck(index)}
+            value={item?.completed}
+            onValueChange={() => handleCheck(index)}
+            color={item?.completed ? "#674fa3" : null}
+            style={{ alignSelf: "center" }}
           />
           <Text style={[styles.text, item?.completed && styles.completed]}>
             {item?.title}
@@ -35,23 +40,19 @@ export default function TodoItem({
 
         <View style={styles.iconContainer}>
           <TouchableOpacity onPress={() => handleDelete(item)}>
-            <Text>
-              <AntDesign
-                name="delete"
-                size={(height * 2.3) / 100}
-                color="red"
-              />
-            </Text>
+            <Image
+              source={require("../assets/delete.png")}
+              width={(width * 1) / 100}
+              height={(height * 1) / 100}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => handleEdit(item)}>
-            <Text>
-              <Feather
-                name="edit-2"
-                size={(height * 2.3) / 100}
-                color="#674fa3"
-              />
-            </Text>
+            <Image
+              source={require("../assets/edit.png")}
+              width={(width * 1) / 100}
+              height={(height * 1) / 100}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -99,5 +100,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     gap: 5,
+  },
+  icons: {
+    paddingVertical: 2,
+    paddingHorizontal: 2,
+    justifyContent: "center",
+    borderWidth: 1,
   },
 });

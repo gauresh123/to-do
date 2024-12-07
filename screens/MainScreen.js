@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
@@ -18,7 +19,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import IdModal from "../components/IdModal";
 import EditModal from "../components/EditModal";
 remove;
-const { height } = Dimensions.get("screen");
+const { height, width } = Dimensions.get("screen");
 
 export default function MainScreen({ navigation }) {
   //const [data, setData] = useState([]);
@@ -91,6 +92,7 @@ export default function MainScreen({ navigation }) {
         handleDelete={(val) => handleDelete(val)}
         handleCheck={(val) => handleCheck(val)}
         setEditVal={(val) => setEditVal(val)}
+        width={width}
       />
     );
   }, []);
@@ -119,9 +121,11 @@ export default function MainScreen({ navigation }) {
               style={styles.floatButton}
               onPress={() => navigation.navigate("Add Todo")}
             >
-              <Text>
-                <AntDesign name="plus" size={24} color="white" />
-              </Text>
+              <Image
+                source={require("../assets/plus.png")}
+                width={(width * 1) / 100}
+                height={(height * 1) / 100}
+              />
             </TouchableOpacity>
           )}
           {info && (
